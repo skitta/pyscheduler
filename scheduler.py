@@ -1,25 +1,31 @@
 import json
-import funcs
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from plugins.slack.webhook import Robot
 
 
-def get_config(path):
-    with open(path) as fp:
-        return json.load(fp)
+sched = BlockingScheduler()
 
-schedule = BlockingScheduler(get_config('config.json'))
-tasks = get_config('tasks.json')
 
-for task in tasks:
+def timing_bot(context=''):
+    bot = Robot('Hubot')
+    bot.hook_url = '/services/T0EGWT6BU/B1X9ASVQU/0DZA0tEnuEmUNpXBiJbHkqte'
+    stdout = bot.send(context)
+    print('sending message %s' % stdout)
+
+
+@sched.scheduled_job(trigger='cron', id='moring', hour=6, minute=30)
+def good_morning():
+    timing_bot('Good Morning')
+
+
+@sched.scheduled_job(trigger='interval', id='test', seconds=5)
+def test():
+    timing_bot('test')
+
+
+if __name__ == '__main__':
     try:
-        func = funcs.__get_fn(task['func'])
-        ttype = task['type']
-        name = task['name']
-        time = task['time']
-        args = task['args']
-        schedule.add_job(func, trigger=ttype, seconds=time, id=name, args=args)
-    except Exception as e:
-        print(e)   
-
-schedule.start()
+        sched.start()
+    except (KeyboardInterrupt, SystemExit):
+        print('Shutdown By Keyboard Interrupt.')

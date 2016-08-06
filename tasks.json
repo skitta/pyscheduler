@@ -1,9 +1,0 @@
-[
-    {
-        "type": "interval",
-        "name": "greeding",
-        "time": 5,
-        "func": "timing_bot",
-        "args": ["hello, world"]
-    }
-]
