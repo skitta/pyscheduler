@@ -1,10 +1,6 @@
 import json
 
-from apscheduler.schedulers.blocking import BlockingScheduler
 from plugins.slack.webhook import Robot
-
-
-sched = BlockingScheduler()
 
 
 def timing_bot(context=''):
@@ -14,17 +10,11 @@ def timing_bot(context=''):
     print('sending message %s' % stdout)
 
 
-@sched.scheduled_job(trigger='cron', id='moring', hour=6, minute=30)
-def good_morning():
-    timing_bot('Good Morning')
-
-
-@sched.scheduled_job(trigger='interval', id='test', seconds=5)
-def test():
-    timing_bot('test')
-
-
 if __name__ == '__main__':
+    from setting import sched
+
+    sched.add_job(timing_bot, 'interval', seconds=5, args=['test',])
+
     try:
         sched.start()
     except (KeyboardInterrupt, SystemExit):
